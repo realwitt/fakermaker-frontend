@@ -7,8 +7,8 @@ import './index.css'
   <div class="bg-bg">
   <header>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+<!--        <RouterLink to="/">Home</RouterLink>-->
+<!--        <RouterLink to="/about">About</RouterLink>-->
       </nav>
   </header>
 

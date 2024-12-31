@@ -2,10 +2,9 @@
 </script>
 
 <template>
-  <main class="bg-bg">
-    <h1 class="text-3xl font-bold underline">
-      Hello world!
+  <main class="bg-bg min-h-screen">
+    <h1 class="text-5xl font-bold text-center mt-[20vh] text-accent-pink">
+      coming soon
     </h1>
-
   </main>
 </template>
