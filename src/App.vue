@@ -4,6 +4,7 @@ import './index.css'
 </script>
 
 <template>
+  <div class="bg-bg">
   <header>
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -11,6 +12,7 @@ import './index.css'
       </nav>
   </header>
 
+  </div>
   <RouterView />
 </template>
 
