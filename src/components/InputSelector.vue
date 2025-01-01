@@ -1,21 +1,94 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 const props = defineProps<{
   itemNames?: Array<string>
 }>()
 
-const searchTerm = ref()
+const isMakerSearchFocused = ref(false)
+const searchTerm = ref('')
+const selectedItems = ref<string[]>([])  // Stores selected pills
+const isBackspaceOnEmpty = ref(false)   // Tracks backspace state for deletion
+const makerInput = ref<HTMLInputElement | null>(null)
+
+const filteredItems = computed(() => {
+  if (!props.itemNames) return ['test']
+  return props.itemNames.filter(item =>
+    item.toLowerCase().includes(searchTerm.value.toLowerCase())
+  )
+})
+
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Backspace' && !searchTerm.value) {
+    e.preventDefault()
+    if (isBackspaceOnEmpty.value && selectedItems.value.length > 0) {
+      selectedItems.value.pop()
+      isBackspaceOnEmpty.value = false
+    } else {
+      isBackspaceOnEmpty.value = true
+    }
+  } else {
+    isBackspaceOnEmpty.value = false
+  }
+}
+
+function selectItem(item: string) {
+  // Count occurrences of the base item
+  const baseItemCount = selectedItems.value.filter(
+    selectedItem => selectedItem.split(' (')[0] === item
+  ).length
+
+  // Add number suffix if the item is already selected
+  const itemToAdd = baseItemCount > 0
+    ? `${item} (${baseItemCount + 1})`
+    : item
+
+  selectedItems.value.push(itemToAdd)
+  searchTerm.value = ''
+}
+
+function removeItem(index: number) {
+  selectedItems.value.splice(index, 1)
+}
+
 </script>
 
 <template>
   <div class="group relative max-w-[700px]">
     <div class="mt-8 overflow-hidden px-[1px] py-[1px] rounded-t-[7px] relative z-20">
       <div class="relative">
-        <input
-          class="relative z-10 h-9 w-full px-3 pb-5 pt-[22px] rounded-t-md text-text-grey focus:outline-none bg-bg-input caret-accent-pink placeholder-text-grey"
-          placeholder="Select makers..."
-          v-model="searchTerm"
-        />
+
+        <!-- pills and input -->
+        <div
+          class=" relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
+          @mousedown="$event.target === $event.currentTarget && ($event.preventDefault(), !isMakerSearchFocused && makerInput?.focus())"
+        >
+          <!-- Pills for selected items -->
+          <div
+            v-for="(item, index) in selectedItems"
+            :key="index"
+            :class="[
+                'bg-accent-pink text-white text-sm flex items-center rounded-full font-semibold overflow-hidden',
+                { 'ring-2 ring-accent-purple -pr-2': isBackspaceOnEmpty && index === selectedItems.length - 1 }
+              ]"
+          >
+            <span class="px-3 py-0.5">{{ item }}</span>
+            <button
+              @click="removeItem(index)"
+              class="hover:bg-accent-purple px-2 py-0.5 h-full flex items-center transition-colors"
+            >×</button>
+          </div>
+          <!-- Input field -->
+          <input
+            ref="makerInput"
+            class="flex-grow bg-transparent text-text-grey focus:outline-none caret-accent-pink placeholder-text-grey min-w-[100px] h-full"
+            :placeholder="selectedItems.length === 0 ? 'Select makers...' : ''"
+            v-model="searchTerm"
+            @keydown="handleKeydown"
+            @focus="isMakerSearchFocused = true"
+            @blur="isMakerSearchFocused = false"
+          />
+        </div>
+
         <div class="absolute inset-x-0 -top-[1px] h-[3px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-100 ease-out group-focus-within:w-full"></div>
         <div class="absolute -left-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
         <div class="absolute -right-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 delay-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
@@ -31,9 +104,10 @@ const searchTerm = ref()
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 -mt-[1px] w-full transition-transform duration-100 ease-in-out -translate-y-full group-focus-within:translate-y-0 group-focus-within:transition-[transform] group-focus-within:delay-100"
       >
         <div
-          v-for="(name, i) in props.itemNames"
+          v-for="(name, i) in filteredItems"
           :key="i"
           class="group/item relative text-text-grey px-3 py-2 min-w-10 bg-bg-slightly-lighter border border-line -ml-[1px] -mt-[1px] hover:text-accent-pink duration-150 cursor-pointer"
+          @mousedown.prevent="selectItem(name)"
         >
           {{name}}
           <div class="absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/item:w-full z-20"></div>
