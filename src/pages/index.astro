@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import InputSelector from '../components/InputSelector.vue'
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const makers = [
+	"First Name",
+	"Last Name",
+	"Company Name",
+	"Email",
+	"Phone Number",
+	"Address",
+	"Address 2",
+	"State",
+	"City",
+	"Zip",
+	"Price",
+	"Number",
+	"Date",
+	"True/False",
+	"Id",
+	"Credit Card",
+	"Credit Card CVV"
+];
 ---
 
 <Layout>
-	<div class="mt-[35vh] text-center text-4xl font-bold text-accent-pink">coming soon </div>
+	<h1 class="flex items-center justify-between bg-accent-pink px-14 py-1 text-bg">
+		<span class="text-sm font-black">⚡ WIP ⚡</span>
+		<span class="text-xs font-black">last updated JAN-01-2024</span>
+		<span class="text-xs font-black">will be finished by JAN-15-2024</span>
+	</h1>
+
+	<div class="mx-14">
+
+		<h1 class="text-text-grey text-[40px] font-black mt-10">fakermaker</h1>
+		<h2 class="text-text-grey mt-3.5 max-w-[500px] leading-[22px]">Quickly generate fake test data using characters from your favorite movies, shows, video games, and more.</h2>
+
+		<InputSelector item-names={makers} client:load />
+	</div>
 </Layout>
