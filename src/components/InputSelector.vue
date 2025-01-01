@@ -24,7 +24,7 @@ const searchTerm = ref()
       </div>
     </div>
 
-    <div class="ml-[1px] overflow-hidden">
+    <div class="pl-[1px] overflow-hidden">
       <div
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 -mt-[1px] max-w-[700px] relative z-10 transition-transform duration-100 ease-in-out -translate-y-full group-focus-within:translate-y-0 group-focus-within:transition-[transform] group-focus-within:delay-100"
       >
