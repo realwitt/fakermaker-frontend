@@ -35,7 +35,12 @@ const makers = [
 		<h1 class="text-text-grey text-[40px] font-black mt-10">fakermaker</h1>
 		<h2 class="text-text-grey mt-3.5 max-w-[500px] leading-[22px]">Quickly generate fake test data using characters from your favorite movies, shows, video games, and more.</h2>
 
-		<InputSelector item-names={makers} client:load />
+		<!-- select makers -->
+		<InputSelector item-names={makers} @selected="selectedMakers" client:load />
+
+		<!-- build the schema object -->
+
+
 		<div class="text-text-grey mt-3">some other component</div>
 	</div>
 </Layout>

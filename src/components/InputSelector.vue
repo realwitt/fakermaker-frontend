@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 const props = defineProps<{
   itemNames?: Array<string>
+}>()
+const emits = defineEmits<{
+  (event: 'selected', items: Array<string>): void
 }>()
 
 const isMakerSearchFocused = ref(false)
 const searchTerm = ref('')
-const selectedItems = ref<string[]>([])  // Stores selected pills
+const selectedItems = ref<Array<string>>([])  // Stores selected pills
 const isBackspaceOnEmpty = ref(false)   // Tracks backspace state for deletion
 const makerInput = ref<HTMLInputElement | null>(null)
 
 const filteredItems = computed(() => {
-  if (!props.itemNames) return ['test']
+  if (!props.itemNames) return ['']
   return props.itemNames.filter(item =>
     item.toLowerCase().includes(searchTerm.value.toLowerCase())
   )
+})
+
+watch(selectedItems, (newItems) => {
+  emits('selected', newItems)
 })
 
 function handleKeydown(e: KeyboardEvent) {
@@ -60,7 +67,7 @@ function removeItem(index: number) {
         <!-- pills and input -->
         <div
           class=" relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
-          @mousedown="$event.target === $event.currentTarget && ($event.preventDefault(), !isMakerSearchFocused && makerInput?.focus())"
+          @mousedown="$event.target === $event.currentTarget && (() => { $event.preventDefault(); !isMakerSearchFocused && makerInput?.focus() })()"
         >
           <!-- Pills for selected items -->
           <div
