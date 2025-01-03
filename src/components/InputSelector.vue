@@ -2,14 +2,15 @@
 import { computed, ref, watch } from 'vue'
 const props = defineProps<{
   itemNames?: Array<string>
+  modelValue: Array<string>
 }>()
 const emits = defineEmits<{
-  (event: 'selected', items: Array<string>): void
+  (event: 'update:modelValue', items: Array<string>): void
 }>()
 
 const isMakerSearchFocused = ref(false)
 const searchTerm = ref('')
-const selectedItems = ref<Array<string>>([])  // Stores selected pills
+const selectedItems = ref<Array<string>>(props.modelValue)
 const isBackspaceOnEmpty = ref(false)   // Tracks backspace state for deletion
 const makerInput = ref<HTMLInputElement | null>(null)
 
@@ -20,9 +21,16 @@ const filteredItems = computed(() => {
   )
 })
 
-watch(selectedItems, (newItems) => {
-  emits('selected', newItems)
-})
+function updateSelected(items: Array<string>) {
+  selectedItems.value = items
+  emits('update:modelValue', items)
+}
+
+watch(() => props.modelValue, (newValue) => {
+  if (JSON.stringify(newValue) !== JSON.stringify(selectedItems.value)) {
+    selectedItems.value = [...newValue]
+  }
+}, { deep: true })
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Backspace' && !searchTerm.value) {
@@ -39,22 +47,23 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 function selectItem(item: string) {
-  // Count occurrences of the base item
   const baseItemCount = selectedItems.value.filter(
     selectedItem => selectedItem.split(' (')[0] === item
   ).length
 
-  // Add number suffix if the item is already selected
   const itemToAdd = baseItemCount > 0
     ? `${item} (${baseItemCount + 1})`
     : item
 
-  selectedItems.value.push(itemToAdd)
+  updateSelected([...selectedItems.value, itemToAdd])
   searchTerm.value = ''
 }
 
+
 function removeItem(index: number) {
-  selectedItems.value.splice(index, 1)
+  const newItems = [...selectedItems.value]
+  newItems.splice(index, 1)
+  updateSelected(newItems)
 }
 
 </script>
@@ -88,7 +97,7 @@ function removeItem(index: number) {
           <input
             ref="makerInput"
             class="flex-grow bg-transparent text-text-grey focus:outline-none caret-accent-pink placeholder-text-grey min-w-[100px] h-full"
-            :placeholder="selectedItems.length === 0 ? 'Select makers...' : ''"
+            :placeholder="selectedItems.length === 0 ? 'Search & select makers...' : ''"
             v-model="searchTerm"
             @keydown="handleKeydown"
             @focus="isMakerSearchFocused = true"
@@ -114,7 +123,7 @@ function removeItem(index: number) {
           v-for="(name, i) in filteredItems"
           :key="i"
           class="group/item relative text-text-grey px-3 py-2 min-w-10 bg-bg-slightly-lighter border border-line -ml-[1px] -mt-[1px] hover:text-accent-pink duration-150 cursor-pointer"
-          @mousedown.prevent="selectItem(name)"
+          @mousedown.prevent="() => { selectItem(name); makerInput?.focus(); }"
         >
           {{name}}
           <div class="absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/item:w-full z-20"></div>
