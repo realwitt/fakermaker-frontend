@@ -115,7 +115,7 @@ function removeItem(index: number) {
     </div>
 
     <!-- 1 pixel padding to the left to offset the collapsing of the borders among all the items -->
-    <div class="pl-[1px] absolute top-full left-0 right-0 overflow-hidden pointer-events-none group-focus-within:pointer-events-auto">
+    <div class="pl-[1px] absolute top-full left-0 right-0 overflow-hidden pointer-events-none group-focus-within:pointer-events-auto z-50">
       <div
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 -mt-[1px] w-full transition-transform duration-100 ease-in-out -translate-y-full group-focus-within:translate-y-0 group-focus-within:transition-[transform] group-focus-within:delay-100"
       >
