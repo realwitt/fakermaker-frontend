@@ -7,9 +7,10 @@ export default {
           'bg': '#212738',
           'bg-slightly-lighter': '#242A3D',
           'bg-input': '#333C57',
-          'line-input' : '#6878A6',
           'line': '#424E70',
+          'line-input' : '#6878A6',
           'text-grey': '#9FA9C6',
+          'text-muted' : '#5D6E9D',
           'accent-pink': '#F75590',
           'accent-purple': '#BDB2FF',
         }
