@@ -1,8 +1,8 @@
 type MakerConfig = {
-  id: string
   type: string
   title: string
   nickname?: string
+  id?: string
   options?: {
     nullable?: boolean
     format?: string

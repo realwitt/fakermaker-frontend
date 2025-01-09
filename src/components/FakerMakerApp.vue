@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InputSelector from './InputSelector.vue'
-import MakerConfigGeneric from './MakerConfigGeneric.vue'
 import { ref, watch } from 'vue'
+import MakerConfig from './MakerConfig.vue'
 
 const makers = [
   "First Name",
@@ -23,19 +23,21 @@ const makers = [
   "Credit Card CVV"
 ];
 
-const activeMakers = ref<Array<string>>([])
+const activeMakers = ref<string[]>([])
 const makerConfigs = ref<MakerConfig[]>([])
 
 watch(activeMakers, (newMakers, oldMakers) => {
   // Find newly added makers
   const addedMakers = newMakers.filter(maker => !oldMakers.includes(maker))
+  console.log('new makers are:')
+  console.log(addedMakers)
 
   // For each new maker, create its config
   addedMakers.forEach(maker => {
     const baseConfig: MakerConfig = {
-      id: `${maker.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
       type: maker,
       title: maker,
+      nickname: maker
     }
 
     // Add specific configurations based on maker type
@@ -92,8 +94,10 @@ watch(activeMakers, (newMakers, oldMakers) => {
 
   <div class="mt-10"></div>
 
-  <!-- build the schema object -->
-  <MakerConfigGeneric />
-
+  <div class="flex flex-wrap gap-10">
+    <div v-for="makerConfig in makerConfigs" :key="makerConfig.type">
+      <MakerConfig :makerConfig="makerConfig" />
+    </div>
+  </div>
 
 </template>
