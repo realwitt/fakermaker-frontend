@@ -17,7 +17,7 @@ const isNullable = ref(false)
 <template>
   <div class="group relative inline-block">
     <div class="flex justify-between w-full -mb-0.5">
-      <div class="text-accent-purple text-[13px] pl-3.5 pb-1">
+      <div class="text-accent-purple text-[13px] pl-3.5 pb-1 pr-32">
         {{makerConfig.title}}
       </div>
       <div class="relative cursor-pointer" @click="isNullable = !isNullable">
@@ -56,7 +56,7 @@ const isNullable = ref(false)
                 ref="inputRef"
                 class="w-full bg-transparent focus:outline-none caret-accent-pink placeholder-text-muted text-text-grey"
                 :placeholder="makerConfig.title || 'Enter text...'"
-                v-model="nickName"
+                v-model="props.makerConfig.nickname"
                 @focus="isFocused = true"
                 @blur="isFocused = false"
               />
@@ -80,10 +80,24 @@ const isNullable = ref(false)
         </div>
 
         <!-- Options section -->
-        <div class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+        <div v-if="props.makerConfig.title === 'Date'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
           <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>
           <div class="pt-1.5 pb-1 -mx-[4px]">|</div>
           <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>
+        </div>
+
+        <div v-if="props.makerConfig.title === 'Id'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+          <!-- todo: get the options for this made -->
+<!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
+<!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
+<!--          <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>-->
+        </div>
+
+        <div v-if="props.makerConfig.title === 'Credit Card'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+          <!-- todo: get the options for this made -->
+<!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
+<!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
+<!--          <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>-->
         </div>
       </div>
 

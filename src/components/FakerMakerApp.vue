@@ -2,6 +2,7 @@
 import InputSelector from './InputSelector.vue'
 import { ref, watch } from 'vue'
 import MakerConfig from './MakerConfig.vue'
+import type { MakerConfigType, MakerEnum } from '../types/MakerConfig.ts'
 
 const makers = [
   "First Name",
@@ -24,7 +25,7 @@ const makers = [
 ];
 
 const activeMakers = ref<string[]>([])
-const makerConfigs = ref<MakerConfig[]>([])
+const makerConfigs = ref<MakerConfigType[]>([])
 
 watch(activeMakers, (newMakers, oldMakers) => {
   // Find newly added makers
@@ -34,8 +35,9 @@ watch(activeMakers, (newMakers, oldMakers) => {
 
   // For each new maker, create its config
   addedMakers.forEach(maker => {
-    const baseConfig: MakerConfig = {
-      type: maker,
+    const baseConfig: MakerConfigType = {
+      // todo: check if there's a better way to do this than casting to our type
+      type: maker.replace(/\s*\(\d+\)\s*$/, '') as MakerEnum,  // Strips numbers in parentheses at the end
       title: maker,
       nickname: maker
     }
