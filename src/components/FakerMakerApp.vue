@@ -7,6 +7,7 @@ import { QueryClient, useMutation, useQuery, useQueryClient, VueQueryPlugin } fr
 import type { MakerConfigType } from '../types/MakerConfigType.ts'
 import type { DataTableRequestType } from '../types/DataTableRequestType.ts'
 import type { DataTableResponseType } from '../types/DataTableResponseType.ts'
+import DataTable from './DataTable.vue'
 
 const makers = [
   "First Name",
@@ -268,18 +269,20 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
   </div>
 
   <button
-    @click="() => dataTableItemsQuery.mutate(schema)"
-    :disabled="dataTableItemsQuery.isPending.value"
-    class="px-4 py-2 rounded-lg font-medium transition-colors
+    class="mt-20 px-4 py-2 rounded-lg font-medium transition-colors
            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
     :class="{
       'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white': !dataTableItemsQuery.isPending.value,
-      'bg-blue-300 cursor-not-allowed text-white': dataTableItemsQuery.isPending
+      'bg-blue-300 cursor-not-allowed text-white': dataTableItemsQuery.isPending.value
     }"
+    @click="() => dataTableItemsQuery.mutate(schema)"
+    :disabled="dataTableItemsQuery.isPending.value"
   >
     {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data' }}
   </button>
 
-
+  <div v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value">
+    <DataTable :data="dataTableItemsQuery.data.value" />
+  </div>
 
 </template>

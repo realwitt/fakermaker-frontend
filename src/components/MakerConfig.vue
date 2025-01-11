@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { MakerConfigType } from '../types/MakerConfigType.ts'
 
 const props = defineProps<{
-  makerConfig: MakerConfig
+  makerConfig: MakerConfigType
 }>()
 // const emits = defineEmits<{
 //   (event: 'selected', items: Array<string>): void
 // }>()
 
-const nickName = ref<string>('')
+const nickName = ref<string>()
 const isFocused = ref(false)
-const inputRef = ref<HTMLInputElement | null>(null)
+const inputRef = ref<HTMLInputElement | null>()
 const isNullable = ref(false)
 </script>
 
@@ -18,7 +19,7 @@ const isNullable = ref(false)
   <div class="group relative inline-block">
     <div class="flex justify-between w-full -mb-0.5">
       <div class="text-accent-purple text-[13px] pl-3.5 pb-1 pr-32">
-        {{makerConfig.title}}
+        {{makerConfig.makerEnum}}
       </div>
       <div class="relative cursor-pointer" @click="isNullable = !isNullable">
         <div
@@ -55,7 +56,7 @@ const isNullable = ref(false)
               <input
                 ref="inputRef"
                 class="w-full bg-transparent focus:outline-none caret-accent-pink placeholder-text-muted text-text-grey"
-                :placeholder="makerConfig.title || 'Enter text...'"
+                :placeholder="makerConfig.makerEnum || 'Enter text...'"
                 v-model="props.makerConfig.nickname"
                 @focus="isFocused = true"
                 @blur="isFocused = false"
@@ -80,20 +81,20 @@ const isNullable = ref(false)
         </div>
 
         <!-- Options section -->
-        <div v-if="props.makerConfig.title === 'Date'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+        <div v-if="props.makerConfig.makerEnum === 'Date'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
           <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>
           <div class="pt-1.5 pb-1 -mx-[4px]">|</div>
           <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>
         </div>
 
-        <div v-if="props.makerConfig.title === 'Id'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+        <div v-if="props.makerConfig.makerEnum === 'Id'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
           <!-- todo: get the options for this made -->
 <!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
 <!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
 <!--          <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>-->
         </div>
 
-        <div v-if="props.makerConfig.title === 'Credit Card'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
+        <div v-if="props.makerConfig.makerEnum === 'Credit Card'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
           <!-- todo: get the options for this made -->
 <!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
 <!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
