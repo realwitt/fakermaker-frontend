@@ -30,11 +30,12 @@
 
 // Main DataTableItem type
 export type DataTableItem = {
-  maker?: string;
-  fakersUsed?: string[]; // FakerEnum[]
-  originalValue?: string;
-  derivedValue: string;
-  wikiUrl?: string;
-  influencedBy?: object[]; // Influencer[];
-  idTypeEnum?: string;  // IdTypeEnum;
+  maker?: string
+  fakersUsed?: string[] // FakerEnum[]
+  originalValue?: string
+  derivedValue: string
+  wikiUrl?: string
+  influencedBy?: object[] // Influencer[];
+  idTypeEnum?: string  // IdTypeEnum;
+  nickname: string
 }

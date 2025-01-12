@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import InputSelector from './InputSelector.vue'
-import { provide, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { getCurrentInstance } from 'vue'
 import MakerConfig from './MakerConfig.vue'
-import { QueryClient, useMutation, useQuery, useQueryClient, VueQueryPlugin } from '@tanstack/vue-query'
+import { QueryClient, useMutation, VueQueryPlugin } from '@tanstack/vue-query'
 import type { MakerConfigType } from '../types/MakerConfigType.ts'
 import type { DataTableRequestType } from '../types/DataTableRequestType.ts'
 import type { DataTableResponseType } from '../types/DataTableResponseType.ts'
@@ -269,8 +269,8 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
   </div>
 
   <button
-    class="mt-20 px-4 py-2 rounded-lg font-medium transition-colors
-           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    class="my-20 px-4 py-2 rounded-lg font-medium transition-colors
+           focus:outline-none"
     :class="{
       'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white': !dataTableItemsQuery.isPending.value,
       'bg-blue-300 cursor-not-allowed text-white': dataTableItemsQuery.isPending.value
@@ -281,7 +281,7 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
     {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data' }}
   </button>
 
-  <div v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value">
+  <div v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
     <DataTable :data="dataTableItemsQuery.data.value" />
   </div>
 
