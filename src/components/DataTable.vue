@@ -48,19 +48,26 @@ function setTooltipPosition(event: MouseEvent) {
 
   let xOffset = -50 // Default center positioning
 
+  // Left edge detection
   if (event.clientX < tooltipWidth / 2 + SCREEN_PADDING) {
-    xOffset = -(event.clientX - SCREEN_PADDING) / tooltipWidth * 100
+    const distanceFromEdge = event.clientX - SCREEN_PADDING
+    const percentageFromCenter = (distanceFromEdge / (tooltipWidth / 2)) * 50
+    xOffset = -percentageFromCenter
   }
+  // Right edge detection
   else if (event.clientX > viewportWidth - tooltipWidth / 2 - SCREEN_PADDING) {
-    xOffset = -((tooltipWidth - (viewportWidth - event.clientX - SCREEN_PADDING)) / tooltipWidth * 100)
+    const distanceFromEdge = viewportWidth - event.clientX - SCREEN_PADDING
+    const percentageFromCenter = (distanceFromEdge / (tooltipWidth / 2)) * 50
+    xOffset = -(100 - percentageFromCenter)
   }
 
   tooltipPosition.value = {
-    x: event.clientX,
+    x: event.clientX,  // Always keep at cursor position
     y: event.clientY,
     xOffset
   }
 }
+
 function handleMouseLeave() {
   showTooltip.value = false
   activeCell.value = null
@@ -74,6 +81,7 @@ function handleClick(cellData: DataTableItem) {
 
 const columnHelper = createColumnHelper<DataTableItem>()
 
+// dynamically generate headers since they can change each time
 const columns = computed((): ColumnDef<DataTableItem, any>[] =>
   props.data.headers.map(header =>
     columnHelper.accessor(header.toLowerCase() as keyof DataTableItem, {
@@ -90,8 +98,8 @@ const table = useVueTable({
 </script>
 
 <template>
-  <div>
-    <table class="text-text-grey">
+  <div class="overflow-x-auto">
+    <table class="text-text-grey w-full min-w-full">
       <thead class="text-accent-pink font-bold">
       <tr>
         <th class="px-6 py-3 text-left text-xs font-medium capitalize tracking-wider text-nowrap" v-for="header in props.data.headers" :key="header">
@@ -115,11 +123,12 @@ const table = useVueTable({
       </tbody>
     </table>
     <div v-if="showTooltip && activeCell"
-         class="fixed z-50 bg-bg border border-line rounded p-4 shadow-lg"
+         ref="tooltipRef"
+         class="fixed z-50 bg-bg border border-line rounded p-4 shadow-lg whitespace-nowrap w-max"
          :style="{
        left: `${tooltipPosition.x}px`,
        top: `${tooltipPosition.y}px`,
-       transform: `translate(${tooltipPosition.xOffset}%, -125%)`
+       transform: `translate(${tooltipPosition.xOffset}%, -100%) translateY(-50px)` // translate full height, plus pixel amount
      }"
     >
       <div v-if="activeCell.fakersUsed && activeCell.fakersUsed.length > 0">
@@ -128,6 +137,8 @@ const table = useVueTable({
           <li v-for="faker in activeCell.fakersUsed" :key="faker">{{ faker }}</li>
         </ul>
       </div>
+
+      <!-- todo: add influencedBy to hover div to show where the values came from -->
 
       <div v-if="activeCell.originalValue && activeCell.originalValue.length > 0">
         <div class="text-text-muted text-xs font-medium mb-1">Original Value</div>

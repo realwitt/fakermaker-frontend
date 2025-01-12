@@ -202,11 +202,6 @@ const schema: DataTableRequestType = {
       "nullable": false
     },
     {
-      "makerEnum": "Credit Card",
-      "nickname": "card number",
-      "nullable": false
-    },
-    {
       "makerEnum": "Credit Card CVV",
       "nickname": "card CVV",
       "nullable": false
@@ -260,26 +255,29 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
 <template>
 
   <!-- select makers -->
-  <InputSelector :item-names="makers" v-model="activeMakers" />
+  <div class="mx-8">
+    <InputSelector :item-names="makers" v-model="activeMakers" />
 
-  <div class="flex flex-wrap gap-10 mt-10">
-    <div v-for="(makerConfig, i) in makerConfigs" :key="i">
-      <MakerConfig :makerConfig="makerConfig" />
+    <div class="flex flex-wrap gap-10 mt-10">
+      <div v-for="(makerConfig, i) in makerConfigs" :key="i">
+        <MakerConfig :makerConfig="makerConfig" />
+      </div>
     </div>
-  </div>
 
-  <button
-    class="my-20 px-4 py-2 rounded-lg font-medium transition-colors
+    <button
+      class="my-20 px-4 py-2 rounded-lg font-medium transition-colors
            focus:outline-none"
-    :class="{
+      :class="{
       'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white': !dataTableItemsQuery.isPending.value,
       'bg-blue-300 cursor-not-allowed text-white': dataTableItemsQuery.isPending.value
     }"
-    @click="() => dataTableItemsQuery.mutate(schema)"
-    :disabled="dataTableItemsQuery.isPending.value"
-  >
-    {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data' }}
-  </button>
+      @click="() => dataTableItemsQuery.mutate(schema)"
+      :disabled="dataTableItemsQuery.isPending.value"
+    >
+      {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data' }}
+    </button>
+
+  </div>
 
   <div v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
     <DataTable :data="dataTableItemsQuery.data.value" />
