@@ -8,6 +8,7 @@ import {
 import type { DataTableItem } from '../types/DataTableItem.ts'
 import type { DataTableResponseType } from '../types/DataTableResponseType.ts'
 import { computed, ref } from 'vue'
+import { useVirtualizer, type VirtualizerOptions } from '@tanstack/vue-virtual'
 
 type TooltipPosition = {
   x: number
@@ -19,15 +20,17 @@ const props = defineProps<{
   data: DataTableResponseType
 }>()
 
-const tooltipRef = ref<HTMLElement | null>(null)
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tooltipRef = ref<HTMLElement>()
 const showTooltip = ref(false)
 const tooltipPosition = ref<TooltipPosition>({
   x: 0,
   y: 0,
-  // todo: this isn't working rn
   xOffset: -50
 })
-const activeCell = ref<DataTableItem | null>(null)
+const activeCell = ref<DataTableItem>()
+const columnHelper = createColumnHelper<DataTableItem>()
+
 
 function handleMouseEnter(event: MouseEvent, cellData: DataTableItem) {
   setTooltipPosition(event)
@@ -70,7 +73,7 @@ function setTooltipPosition(event: MouseEvent) {
 
 function handleMouseLeave() {
   showTooltip.value = false
-  activeCell.value = null
+  activeCell.value = undefined
 }
 
 function handleClick(cellData: DataTableItem) {
@@ -79,7 +82,28 @@ function handleClick(cellData: DataTableItem) {
   }
 }
 
-const columnHelper = createColumnHelper<DataTableItem>()
+function measureElement(el?: Element) {
+  if (!el) {
+    return
+  }
+  rowVirtualizer.value.measureElement(el)
+  return undefined
+}
+
+const rowVirtualizerOptions = computed(() => {
+    return {
+      count: props.data.data.length / props.data.headers.length,
+      estimateSize: () => 33, //estimate row height for accurate scrollbar dragging
+      getScrollElement: () => tableContainerRef.value,
+      overscan: 5
+    }
+  }
+)
+const rowVirtualizer = useVirtualizer(rowVirtualizerOptions)
+
+const virtualRows = computed(() => rowVirtualizer.value.getVirtualItems())
+const totalSize = computed(() => rowVirtualizer.value.getTotalSize())
+
 
 // dynamically generate headers since they can change each time
 const columns = computed((): ColumnDef<DataTableItem, any>[] =>
@@ -95,41 +119,109 @@ const table = useVueTable({
   columns: columns.value,
   getCoreRowModel: getCoreRowModel()
 })
+const { rows } = table.getRowModel()
 </script>
 
+<!-- for virt content Tr: -->
+<!--:style="{-->
+<!--position: 'absolute',-->
+<!--top: 0,-->
+<!--left: 0,-->
+<!--width: '100%',-->
+<!--height: `${virtualRow.size}px`,-->
+<!--transform: `translateY(${virtualRow.start}px)`,-->
+<!--}"-->
+
+
 <template>
-  <div class="overflow-x-auto">
-    <table class="text-text-grey w-full min-w-full">
-      <thead class="text-accent-pink font-bold">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium capitalize tracking-wider text-nowrap" v-for="header in props.data.headers" :key="header">
-          {{ header }}
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr class="hover:bg-bg-slightly-lighter" v-for="n in data.data.length / data.headers.length" :key="n">
-        <td class="px-6 py-2 text-left text-sm text-nowrap border-y border-line relative hover:outline hover:outline-1 hover:outline-accent-pink hover:bg-bg-input hover:z-10 cursor-pointer"
-            v-for="(header, i) in data.headers"
+  <div
+    ref="parentRef"
+    class="overflow-auto"
+    style="height: 500px; width: 100%"
+  >
+    <!-- Table container to maintain consistent widths -->
+    <div class="relative">
+      <!-- Fixed header table -->
+      <table class="text-text-grey w-full min-w-full">
+        <colgroup>
+          <col v-for="header in props.data.headers" :key="header" class="w-auto" />
+        </colgroup>
+        <thead class="text-accent-pink font-bold sticky top-0 bg-bg z-20">
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium capitalize tracking-wider text-nowrap border-b border-line"
+            v-for="header in props.data.headers"
             :key="header"
-            @mouseenter="handleMouseEnter($event, data.data[(n-1) * data.headers.length + i])"
-            @mousemove="handleMouseMove"
-            @mouseleave="handleMouseLeave"
-            @click="handleClick(data.data[(n-1) * data.headers.length + i])"
-        >
-          {{ data.data[(n-1) * data.headers.length + i]?.derivedValue || 'null' }}
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          >
+            {{ header }}
+          </th>
+        </tr>
+        </thead>
+      </table>
+
+      <!-- Virtualized content -->
+      <div
+        :style="{
+          height: `${totalSize}px`,
+          width: '100%',
+          position: 'relative',
+        }"
+      >
+        <table class="w-full min-w-full">
+          <colgroup>
+            <col v-for="header in props.data.headers" :key="header" class="w-auto" />
+          </colgroup>
+          <tbody
+            :style="{
+            display: 'grid',
+            height: `${totalSize}px`, //tells scrollbar how big the table is
+            position: 'relative', //needed for absolute positioning of rows
+          }">
+          <tr
+            v-for="vRow in virtualRows"
+            :key="vRow.index"
+            :ref="measureElement"
+            :style="{
+              display: 'flex',
+              position: 'absolute',
+              transform: `translateY(${vRow.start}px)`, //this should always be a `style` as it changes on scroll
+              width: '100%',
+            }"
+            class="hover:bg-bg-slightly-lighter"
+          >
+            <td
+              v-for="(header, i) in data.headers"
+              :key="header"
+              class="bg-orange-400 px-6 py-2 text-left text-sm text-nowrap border-y border-line relative hover:bg-bg-input hover:z-10 cursor-pointer group/cell"
+              @mouseenter="handleMouseEnter($event, data.data[vRow.index * data.headers.length + i])"
+              @mousemove="handleMouseMove"
+              @mouseleave="handleMouseLeave"
+              @click="handleClick(data.data[vRow.index * data.headers.length + i])"
+            >
+              {{ data.data[vRow.index * data.headers.length + i]?.derivedValue || 'null' }}
+              <!-- Animated borders -->
+              <div
+                class="absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/cell:w-full z-20"></div>
+              <div
+                class="absolute -left-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 ease-out group-hover/cell:h-[calc(100%+2px)] z-20"></div>
+              <div
+                class="absolute -right-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 delay-150 ease-out group-hover/cell:h-[calc(100%+2px)] z-20"></div>
+              <div
+                class="absolute -bottom-[1px] left-0 h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 delay-150 ease-out group-hover/cell:w-full z-20"></div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <div v-if="showTooltip && activeCell"
          ref="tooltipRef"
          class="fixed z-50 bg-bg border border-line rounded p-4 shadow-lg whitespace-nowrap w-max"
          :style="{
-       left: `${tooltipPosition.x}px`,
-       top: `${tooltipPosition.y}px`,
-       transform: `translate(${tooltipPosition.xOffset}%, -100%) translateY(-50px)` // translate full height, plus pixel amount
-     }"
+           left: `${tooltipPosition.x}px`,
+           top: `${tooltipPosition.y}px`,
+           transform: `translate(${tooltipPosition.xOffset}%, -100%) translateY(-50px)` // translate full height, plus pixel amount
+         }"
     >
       <div v-if="activeCell.fakersUsed && activeCell.fakersUsed.length > 0">
         <div class="text-text-muted text-xs font-medium mb-1">Fakers Used:</div>
@@ -143,7 +235,7 @@ const table = useVueTable({
       <div v-if="activeCell.originalValue && activeCell.originalValue.length > 0">
         <div class="text-text-muted text-xs font-medium mb-1">Original Value</div>
         <div class="list-disc list-inside mb-3 text-accent-purple text-sm">
-          {{activeCell.originalValue}}
+          {{ activeCell.originalValue }}
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import type { MakerConfigType } from '../types/MakerConfigType.ts'
 import type { DataTableRequestType } from '../types/DataTableRequestType.ts'
 import type { DataTableResponseType } from '../types/DataTableResponseType.ts'
 import DataTable from './DataTable.vue'
+import DataTable2 from './DataTable2.vue'
 
 const makers = [
   "First Name",
@@ -279,8 +280,10 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
 
   </div>
 
-  <div v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
-    <DataTable :data="dataTableItemsQuery.data.value" />
+  <div
+    v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
+<!--    <DataTable :data="dataTableItemsQuery.data.value" />-->
+    <DataTable2 :data="dataTableItemsQuery.data.value" />
   </div>
 
 </template>
