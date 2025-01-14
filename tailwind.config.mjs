@@ -8,7 +8,8 @@ export default {
     extend: {
       colors: {
         'bg': '#212738',
-        'bg-slightly-lighter': '#2D364D',
+        'bg-slightly-lighter' : '#282F43',
+        'bg-lighter': '#2D364D',
         'bg-input': '#333C57',
         'line': '#424E70',
         'line-input' : '#6878A6',
