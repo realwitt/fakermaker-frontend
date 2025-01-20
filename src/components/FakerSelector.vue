@@ -1,0 +1,65 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const search = ref()
+const isFocused = ref(false)
+const inputRef = ref<HTMLInputElement | null>()
+
+</script>
+
+<template>
+<!--  todo: we'll make sure this width expands and contracts with the viewport width later -->
+<div class="flex bg-bg w-[310px] h-full">
+<!-- holds all the good stuff -->
+  <div class="grow h-full bg-bg z-20">
+
+    <div class="overflow-hidden py-[1px] relative mt-11">
+      <div class="relative">
+        <div
+          class="relative z-10 min-h-10 w-full px-3 py-2 bg-bg-input cursor-text"
+          @mousedown="
+                $event.target === $event.currentTarget &&
+                (() => {
+                  $event.preventDefault()
+                  !isFocused && inputRef?.focus()
+                })()
+              "
+        >
+          <input
+            ref="inputRef"
+            class="w-full bg-transparent focus:outline-none caret-accent-pink placeholder-text-muted text-text-grey"
+            placeholder="Search fakers..."
+            v-model="search"
+            @focus="isFocused = true"
+            @blur="isFocused = false"
+          />
+        </div>
+
+        <!-- Animated borders -->
+        <div
+          class="absolute inset-x-0 -top-[1px] h-[3px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-100 ease-out group-focus-within:w-full"
+        />
+        <div
+          class="absolute -left-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 ease-out group-focus-within:h-[calc(100%+2px)]"
+        />
+        <div class="absolute -bottom-[1px] left-0 h-[1px] w-full bg-accent-pink" />
+        <div
+          class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-pink-400 origin-left transition-all duration-100 ease-out group-hover:w-full"
+        />
+        <div
+          class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-accent-pink origin-left transition-all duration-100 delay-100 ease-out group-focus-within:w-full z-10"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="w-5 h-full bg-bg border-accent-pink border-l [box-shadow:-14px_0_25px_0_#BDB2FF] z-[10]">
+    <div class="mt-32 text-text-muted flex-col space-y-1.5">
+      <span class="inline-block ml-[3px] text-xl">←</span>
+      <span class="[writing-mode:vertical-lr] text-xs tracking-wider pl-[1px]">
+        collapse
+    </span>
+    </div>
+  </div>
+</div>
+</template>

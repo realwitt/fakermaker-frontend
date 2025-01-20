@@ -5,8 +5,7 @@ import {
   useVueTable,
   getCoreRowModel,
   getSortedRowModel,
-  createColumnHelper,
-  FlexRender
+  FlexRender, type TableState
 } from '@tanstack/vue-table'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { DataTableItem } from '../types/DataTableItem.ts'
@@ -116,6 +115,17 @@ function handleClick(cellData: DataTableItem) {
   }
 }
 
+const columnSizes = {
+  'id': 100,
+  'state': 50,
+  'company name': 300,
+  'email': 350,
+  'card cvv': 50,
+  'zip': 50,
+  'address': 250,
+  defaultSize: 150
+}
+
 const columns = computed<ColumnDef<Record<string, DataTableItem>>[]>(() =>
   props.data.headers.map(header => ({
     accessorKey: header,
@@ -123,14 +133,16 @@ const columns = computed<ColumnDef<Record<string, DataTableItem>>[]>(() =>
     cell: ({ row }) => {
       const item = row.original[header]
       return h('div', {
-        class: 'relative group/cell w-full px-6 py-2 text-left text-sm text-nowrap border-y border-line hover:bg-bg-input hover:z-10 cursor-pointer',
+        class: ' relative group/cell w-full px-6 py-2 text-left text-sm text-nowrap border-y border-line hover:bg-bg-input hover:z-10 cursor-pointer',
         onMouseenter: (event) => handleMouseEnter(event, item),
         onMousemove: handleMouseMove,
         onMouseleave: handleMouseLeave,
         onClick: () => handleClick(item),
       }, [
         // Content
-        item?.derivedValue,
+        h('div', {
+          class: 'truncate'
+        }, item?.derivedValue),
         // Border animations
         h('div', {
           class: 'absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/cell:w-full z-20'
@@ -147,15 +159,23 @@ const columns = computed<ColumnDef<Record<string, DataTableItem>>[]>(() =>
       ])
     },
     accessorFn: (row: Record<string, DataTableItem>) => row[header]?.derivedValue,
-    enableResizing: true,
-    size: header.toLowerCase() === 'company name' ? 350 : // Company name gets more space
-      header.toLowerCase() === 'email' ? 250 : // Email still needs decent space
-        150, // Other columns get less space
+    size: columnSizes[header.toLowerCase() as keyof typeof columnSizes] ?? columnSizes.defaultSize,
     minSize: 100,
   }))
 )
 
-const columnSizing = ref({})
+const columnSizing = ref<Record<string, number>>({})
+const columnSizingInfo = ref({
+  startOffset: null,
+  startSize: null,
+  deltaOffset: null,
+  deltaPercentage: null,
+  isResizingColumn: false,
+  columnSizingStart: []
+})
+
+// Table configuration
+
 const table = useVueTable<Record<string, DataTableItem>>({
   get data() {
     return filteredData.value
@@ -173,9 +193,15 @@ const table = useVueTable<Record<string, DataTableItem>>({
   state: {
     columnSizing: columnSizing.value
   },
-  onColumnSizingChange: updater => {
-    columnSizing.value = updater instanceof Function ? updater(columnSizing.value) : updater
-  }
+  onColumnSizingChange: (updater) => {
+    console.log("update is")
+    console.log(updater)
+    if (typeof updater === 'function') {
+      columnSizing.value = updater(columnSizing.value)
+    } else {
+      columnSizing.value = updater
+    }
+  },
 })
 
 const rows = computed(() => table.getRowModel().rows)
@@ -229,10 +255,10 @@ function measureElement(el?: Element) {
     </div>
   </div>
   <div
-    class="overflow-auto relative h-[800px] w-full"
+    class="overflow-auto relative h-[600px] md:mx-8"
     ref="tableContainerRef"
   >
-      <table class="text-text-grey w-full">
+      <table class="text-text-grey w-full" :style="{width: `${table.getCenterTotalSize()}px`}">
         <thead
           :style="{
             display: 'grid',
@@ -254,6 +280,8 @@ function measureElement(el?: Element) {
             :colspan="header.colSpan"
             :style="{
               width: `${header.getSize()}px`,
+              minWidth: `${header.column.columnDef.minSize}px`,
+              maxWidth: `${header.column.columnDef.maxSize}px`
             }"
           >
             <div
@@ -271,15 +299,14 @@ function measureElement(el?: Element) {
             <!-- for resizing -->
             <div
               v-if="header.column.getCanResize()"
-              @mousedown="header.getResizeHandler()"
-              @touchstart="header.getResizeHandler()"
+              @mousedown="(event) => header.getResizeHandler()(event)"
+              @touchstart="(e) => header.getResizeHandler()(e)"
               class="absolute right-0 top-0 h-full w-1 bg-gray-400/50 cursor-col-resize select-none touch-none hover:opacity-100 hover:bg-gray-400"
               :class="{ 'bg-gray-600 opacity-100': header.column.getIsResizing() }"
             />
           </th>
         </tr>
         </thead>
-<!-- todo: tbody > tr > td is creating problems with that 1 pixel gap between elments... how to get rid of?? -->
         <tbody
           class="flex relative"
           :style="{
@@ -302,9 +329,11 @@ function measureElement(el?: Element) {
             v-for="cell in rows[vRow.index].getVisibleCells()"
             :key="cell.id"
             :style="{
-                display: 'flex',
-                width: `${cell.column.getSize()}px`,
-              }"
+              display: 'flex',
+              width: `${cell.column.getSize()}px`,
+              minWidth: `${cell.column.columnDef.minSize}px`,
+              maxWidth: `${cell.column.columnDef.maxSize}px`
+            }"
           >
             <FlexRender
               :render="cell.column.columnDef.cell"

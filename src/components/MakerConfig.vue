@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const nickName = ref<string>()
 const isFocused = ref(false)
-const inputRef = ref<HTMLInputElement | null>()
+const inputRef = ref<HTMLInputElement | null>(null)
 const isNullable = ref(false)
 </script>
 
