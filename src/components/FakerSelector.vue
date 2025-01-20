@@ -10,7 +10,7 @@ const isCollapsed = ref(false)  // track if menu is collapsed or not
 
 <template>
   <div
-    class="flex bg-bg grow h-full transition-[max-width] duration-100 ease-out"
+    class="flex flex-shrink-0 bg-bg grow h-full transition-[max-width] duration-100 ease-out"
     :class="[isCollapsed ? 'max-w-[102px]' : 'max-w-[310px]']"
   >
     <!-- holds all the good stuff -->

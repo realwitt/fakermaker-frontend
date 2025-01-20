@@ -5,7 +5,7 @@ import {
   useVueTable,
   getCoreRowModel,
   getSortedRowModel,
-  FlexRender, type TableState
+  FlexRender,
 } from '@tanstack/vue-table'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { DataTableItem } from '../types/DataTableItem.ts'

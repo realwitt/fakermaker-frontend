@@ -17,7 +17,25 @@ export default {
         'text-muted' : '#5D6E9D',
         'accent-pink': '#F75590',
         'accent-purple': '#BDB2FF',
-      }
+      },
+      keyframes: {
+        shine: {
+          '0%': {
+            opacity: '0',
+            backgroundPositionX: '-200%'
+          },
+          '50%': {
+            opacity: '1'
+          },
+          '100%': {
+            opacity: '0',
+            backgroundPositionX: '200%'
+          }
+        }
+      },
+      animation: {
+        'shine': 'shine 2.75s ease-out'
+      },
     },
   },
   plugins: [],

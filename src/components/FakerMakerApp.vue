@@ -142,11 +142,28 @@ const handleGenerateData = () => {
   <div class="flex h-full">
     <FakerSelector />
 
-    <div class="ml-16 mr-8">
+    <div class="ml-16 mr-8 flex-1">
 
-      <h1 class="text-text-grey text-[40px] font-black mt-10">fakermaker</h1>
-      <h2 class="text-text-grey mt-3.5 max-w-[500px] leading-[22px]">Quickly generate fake test data using characters
-        from your favorite movies, shows, video games, and more.</h2>
+      <!-- Changed to group to enable hover targeting -->
+      <div class="relative group">
+        <h1 class="text-text-grey text-[40px] font-black mt-10">
+          fakermaker
+        </h1>
+
+        <!-- Mirrored flash -->
+        <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10
+       text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent
+       bg-[length:200%_100%] group-hover:animate-shine opacity-0 select-none
+       transform -scale-y-100"
+        >
+          fakermaker
+        </h1>
+      </div>
+
+      <h2 class="text-text-grey mt-3.5 max-w-[510px] leading-[22px] mb-12">
+        Quickly generate fake test data using characters
+        from your favorite movies, shows, video games, and more.
+      </h2>
 
       <InputSelector :item-names="makers" v-model="activeMakers" />
 
@@ -169,11 +186,13 @@ const handleGenerateData = () => {
       </button>
     </div>
 
+  </div>
+
+  <!--  this floats above the context as a tooltip after the API call has completed. -->
     <div
       v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
       <DataTable :data="dataTableItemsQuery.data.value" />
     </div>
 
-  </div>
 
 </template>

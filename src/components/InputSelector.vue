@@ -69,7 +69,7 @@ function removeItem(index: number) {
 </script>
 
 <template>
-  <div class="group relative max-w-[700px]">
+  <div class="group relative w-full">
     <div class="mt-8 overflow-hidden px-[1px] py-[1px] rounded-t-[7px] relative z-20">
       <div class="relative">
 
