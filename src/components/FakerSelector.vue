@@ -54,7 +54,18 @@ const isCollapsed = ref(false)  // track if menu is collapsed or not
           />
         </div>
       </div>
+
+      <div class="relative bg-cover bg-center h-[50px]"
+           style="background-image: url('/src/assets/lotr-background.png')">
+        <div class="absolute right-0 h-full w-[130px] bg-gradient-to-r from-transparent to-[#212738]" />
+        <div class="text-white font-black text-md text-right pt-5 pr-3 relative z-10 drop-shadow-[0_0_14.1px_rgba(255,255,255,0.5)] transition-opacity duration-100 ease-out"
+             :class="[isCollapsed ? 'opacity-0' : 'opacity-100']">
+          Lord of the Rings
+        </div>
+      </div>
+
     </div>
+
 
     <div
       class="w-5 h-full bg-bg border-accent-pink border-l [box-shadow:-14px_0_25px_0_#BDB2FF] z-[10] cursor-pointer flex-shrink-0 group hover:bg-bg-slightly-lighter duration-100"
