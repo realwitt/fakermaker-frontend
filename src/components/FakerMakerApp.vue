@@ -136,6 +136,17 @@ const handleGenerateData = () => {
   // Submit the schema
   dataTableItemsQuery.mutate(schema.value)
 }
+
+
+const isAnimating = ref(false)
+const triggerAnimation = () => {
+  if (!isAnimating.value) {
+    isAnimating.value = true
+    setTimeout(() => {
+      isAnimating.value = false
+    }, 1500) // Match this to your animation duration
+  }
+}
 </script>
 
 <template>
@@ -145,16 +156,16 @@ const handleGenerateData = () => {
     <div class="ml-16 mr-8 flex-1">
 
       <!-- Changed to group to enable hover targeting -->
-      <div class="relative group">
+      <div class="relative" @mouseenter="triggerAnimation">
         <h1 class="text-text-grey text-[40px] font-black mt-10">
           fakermaker
         </h1>
 
         <!-- Mirrored flash -->
         <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10
-       text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent
-       bg-[length:200%_100%] group-hover:animate-shine opacity-0 select-none
-       transform -scale-y-100"
+      text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent
+      bg-[length:200%_100%] opacity-0 select-none transform -scale-y-100"
+            :class="{ 'animate-shine': isAnimating }"
         >
           fakermaker
         </h1>

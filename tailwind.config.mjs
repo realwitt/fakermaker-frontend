@@ -34,7 +34,7 @@ export default {
         }
       },
       animation: {
-        'shine': 'shine 2.75s ease-out'
+        'shine': 'shine 1.5s ease-out'
       },
     },
   },
