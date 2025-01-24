@@ -110,7 +110,7 @@ const schema = ref<DataTableRequestType>({
 
 const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableRequestType>({
   mutationFn: async (requestSchema) => {
-    const response = await fetch('http://localhost:8181/api/fakermaker/dataTable/', {
+    const response = await fetch('data.fakermaker.fm/api/fakermaker/dataTable/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
