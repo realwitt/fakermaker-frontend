@@ -261,29 +261,24 @@ function handleMouseLeaveDataTable() {
     @mouseenter="handleMouseEnterDataTable"
     @mouseleave="handleMouseLeaveDataTable"
   >
-<!-- title/search -->
-    <div
-      class="bg-bg cursor-pointer text-text-grey hover:bg-bg-slightly-lighter transition-colors"
-    >
-      <div class="flex items-center justify-center">
+    <!-- title/search -->
+    <div class="flex items-center justify-center bg-bg cursor-pointer text-text-grey hover:bg-bg-slightly-lighter transition-colors" >
+      <div
+        class="px-6 border-x border-t border-line rounded-t-lg"
+        :class="[isExpanded ? 'absolute opacity-0' : 'relative opacity-100']"
+      >
+        Data Sample
+      </div>
 
-        <div
-          class="px-6 border-x border-t border-line rounded-t-lg"
-          :class="[isExpanded ? 'absolute opacity-0' : 'relative opacity-100']"
-        >
-          Data Sample
-        </div>
-
-        <!-- Search input - visible when expanded -->
-        <div
-          class="transition-all duration-300 -mb-[1px] origin-center"
-          :class="[isExpanded ? 'w-64 scale-x-100 relative visible' : 'w-64 scale-x-0 absolute invisible']"
-        >
-          <FakerMakerInput
-            v-model="search"
-            placeholder="search data..."
-          />
-        </div>
+      <!-- Search input - visible when expanded -->
+      <div
+        class="transition-all duration-300 -mb-[1px] origin-center"
+        :class="[isExpanded ? 'w-64 scale-x-100 relative visible' : 'w-64 scale-x-0 absolute invisible']"
+      >
+        <FakerMakerInput
+          v-model="search"
+          placeholder="search data..."
+        />
       </div>
     </div>
 
@@ -294,7 +289,7 @@ function handleMouseLeaveDataTable() {
     >
       <!-- Table Area -->
       <div
-        class="flex justify-center overflow-auto relative h-full w-full"
+        class="flex overflow-auto h-full w-full"
         ref="tableContainerRef"
       >
         <table class="text-text-grey w-full">

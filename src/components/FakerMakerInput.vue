@@ -20,12 +20,12 @@ function handleInput(e: Event) {
 </script>
 
 <template>
-  <div class="group relative w-full bg-orange">
+  <div class="group relative w-full">
     <div class="overflow-hidden px-[1px] py-[1px] rounded-t-[7px] relative z-20">
       <div class="relative">
 
         <div
-          class=" relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
+          class="relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
           @mousedown="$event.target === $event.currentTarget && (() => { $event.preventDefault(); !isInputFocused})()"
         >
           <!-- Input field -->
