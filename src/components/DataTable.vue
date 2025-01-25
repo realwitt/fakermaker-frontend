@@ -151,16 +151,16 @@ const columns = computed<ColumnDef<Record<string, DataTableItem>>[]>(() => {
         }, item?.derivedValue),
         // Border animations
         h('div', {
-          class: 'absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/cell:w-full z-20'
+          class: 'absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/cell:w-full'
         }),
         h('div', {
-          class: 'absolute -left-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 ease-out group-hover/cell:h-[calc(100%+2px)] z-20'
+          class: 'absolute -left-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 ease-out group-hover/cell:h-[calc(100%+2px)]'
         }),
         h('div', {
-          class: 'absolute -right-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 delay-150 ease-out group-hover/cell:h-[calc(100%+2px)] z-20'
+          class: 'absolute -right-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 delay-150 ease-out group-hover/cell:h-[calc(100%+2px)]'
         }),
         h('div', {
-          class: 'absolute -bottom-[1px] left-0 h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 delay-150 ease-out group-hover/cell:w-full z-20'
+          class: 'absolute -bottom-[1px] left-0 h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 delay-150 ease-out group-hover/cell:w-full'
         })
       ])
     },
@@ -201,8 +201,6 @@ const table = useVueTable<Record<string, DataTableItem>>({
     columnSizing: columnSizing.value
   },
   onColumnSizingChange: (updater) => {
-    console.log('update is')
-    console.log(updater)
     if (typeof updater === 'function') {
       columnSizing.value = updater(columnSizing.value)
     } else {
@@ -313,6 +311,8 @@ function handleMouseLeaveDataTable() {
               :key="header.id"
               :colspan="header.colSpan"
               :style="{
+              //   if the viewport width divided by the number of columns is less than our min-width, use that value instead
+              // this will allow us to take up the whole width
               width: `${header.getSize()}px`,
             }"
             >
@@ -362,6 +362,8 @@ function handleMouseLeaveDataTable() {
               :key="cell.id"
               :style="{
                 display: 'flex',
+              //   if the viewport width divided by the number of columns is less than our min-width, use that value instead
+              // this will allow us to take up the whole width
                 width: `${cell.column.getSize()}px`,
               }"
             >

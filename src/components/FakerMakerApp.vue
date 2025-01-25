@@ -36,8 +36,6 @@ const makerConfigs = ref<MakerConfigType[]>([])
 watch(activeMakers, (newMakers, oldMakers) => {
   // Find newly added makers
   const addedMakers = newMakers.filter(maker => !oldMakers.includes(maker))
-  console.log('new makers are:')
-  console.log(addedMakers)
 
   // For each new maker, create its config
   addedMakers.forEach(maker => {
@@ -88,6 +86,31 @@ watch(activeMakers, (newMakers, oldMakers) => {
   })
 }, { deep: true })
 
+const handleMakerDelete = (makerEnum: string) => {
+  // Remove from activeMakers
+  const index = activeMakers.value.findIndex(maker =>
+    maker.replace(/\s*\(\d+\)\s*$/, '') === makerEnum
+  )
+  if (index !== -1) {
+    activeMakers.value.splice(index, 1)
+  }
+
+  // Remove from makerConfigs
+  const configIndex = makerConfigs.value.findIndex(config =>
+    config.makerEnum === makerEnum
+  )
+  if (configIndex !== -1) {
+    makerConfigs.value.splice(configIndex, 1)
+  }
+
+  // Update schema immediately
+  schema.value = {
+    ...schema.value,
+    makers: makerConfigs.value
+  }
+}
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -107,6 +130,12 @@ const schema = ref<DataTableRequestType>({
   makers: [],
   fakers: []
 })
+const updateFakers = (selectedFakers: string[]) => {
+  schema.value = {
+    ...schema.value,
+    fakers: selectedFakers
+  }
+}
 
 const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableRequestType>({
   mutationFn: async (requestSchema) => {
@@ -126,16 +155,15 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
   }
 })
 
-const handleGenerateData = () => {
-  // Update the schema with current maker configs
+function handleGenerateData() {
   schema.value = {
-    makers: makerConfigs.value,
-    fakers: []
+    ...schema.value,
+    makers: makerConfigs.value
+    // Keep existing fakers from schema.value.fakers
   }
 
   // Submit the schema
-  dataTableItemsQuery.mutate(schema.value)
-}
+  dataTableItemsQuery.mutate(schema.value)}
 
 
 const isAnimating = ref(false)
@@ -151,7 +179,7 @@ const triggerAnimation = () => {
 
 <template>
   <div class="flex h-full">
-    <FakerSelector />
+    <FakerSelector @update:fakers="updateFakers" />
 
     <div class="ml-16 mr-8 flex-1">
 
@@ -180,9 +208,13 @@ const triggerAnimation = () => {
 
       <div class="flex flex-wrap gap-10 mt-10">
         <div v-for="(makerConfig, i) in makerConfigs" :key="i">
-          <MakerConfig :makerConfig="makerConfig" />
+          <MakerConfig
+            :makerConfig="makerConfig"
+            @delete="handleMakerDelete"
+          />
         </div>
       </div>
+
 
       <button
         class="my-20 px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none"

@@ -61,11 +61,38 @@ function selectItem(item: string) {
 
 
 function removeItem(index: number) {
+  const itemToRemove = selectedItems.value[index]
+  const baseItem = itemToRemove.split(' (')[0]
+
+  // Get all instances of this maker
+  const itemIndices = selectedItems.value.reduce((acc: number[], item, idx) => {
+    if (item.split(' (')[0] === baseItem) {
+      acc.push(idx)
+    }
+    return acc
+  }, [])
+
+  // Remove the item
   const newItems = [...selectedItems.value]
   newItems.splice(index, 1)
+
+  // Renumber remaining items of the same type
+  if (itemIndices.length > 1) {
+    const remainingItems = newItems.filter(item => item.split(' (')[0] === baseItem)
+    remainingItems.forEach((item, idx) => {
+      const itemIndex = newItems.indexOf(item)
+      if (itemIndex !== -1) {
+        if (idx === 0) {
+          newItems[itemIndex] = baseItem
+        } else {
+          newItems[itemIndex] = `${baseItem} (${idx + 1})`
+        }
+      }
+    })
+  }
+
   updateSelected(newItems)
 }
-
 </script>
 
 <template>

@@ -5,14 +5,18 @@ import type { MakerConfigType } from '../types/MakerConfigType.ts'
 const props = defineProps<{
   makerConfig: MakerConfigType
 }>()
-// const emits = defineEmits<{
-//   (event: 'selected', items: Array<string>): void
-// }>()
 
-const nickName = ref<string>()
+const emits = defineEmits<{
+  (event: 'delete', makerEnum: string): void
+}>()
+
 const isFocused = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 const isNullable = ref(false)
+
+const handleDelete = () => {
+  emits('delete', props.makerConfig.makerEnum)
+}
 </script>
 
 <template>
@@ -88,26 +92,19 @@ const isNullable = ref(false)
         </div>
 
         <div v-if="props.makerConfig.makerEnum === 'Id'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
-          <!-- todo: get the options for this made -->
-<!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
-<!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
-<!--          <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>-->
+          <!-- Id options -->
         </div>
 
         <div v-if="props.makerConfig.makerEnum === 'Credit Card'" class="flex text-sm -mt-[1px] text-text-grey border border-text-muted border-t-0 rounded-bl-md">
-          <!-- todo: get the options for this made -->
-<!--          <div class="cursor-pointer select-none pt-1.5 pb-1 px-3 hover:text-accent-pink hover:bg-bg-slightly-lighter transition duration-100 rounded-bl-[5px]">JAN-01-2000</div>-->
-<!--          <div class="pt-1.5 pb-1 -mx-[4px]">|</div>-->
-<!--          <div class="cursor-pointer select-none pt-1.5 pb-1  px-3 hover:text-accent-pink hover:bg-bg-input transition duration-100">JAN-01-2000</div>-->
+          <!-- Credit card options -->
         </div>
       </div>
 
-      <!-- X button container - now spans both sections -->
-      <div
-        class="flex items-stretch -ml-[1px]"
-      >
+      <!-- X button container -->
+      <div class="flex items-stretch -ml-[1px]">
         <div
           class="transition duration-100 text-text-muted px-2.5 font-bold text-xl flex items-center border border-text-muted rounded-r-md cursor-pointer select-none hover:border-accent-pink hover:text-accent-pink hover:bg-bg-slightly-lighter"
+          @click="handleDelete"
         >
           ✗
         </div>
