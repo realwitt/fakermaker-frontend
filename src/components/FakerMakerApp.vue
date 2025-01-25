@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputSelector from './InputSelector.vue'
+import MakerSelector from './MakerSelector.vue'
 import { ref, watch } from 'vue'
 import { getCurrentInstance } from 'vue'
 import MakerConfig from './MakerConfig.vue'
@@ -160,15 +160,15 @@ const triggerAnimation = () => {
         <h1 class="text-text-grey text-[40px] font-black mt-10">
           fakermaker
         </h1>
-
-        <!-- Mirrored flash -->
-        <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10
-      text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent
-      bg-[length:200%_100%] opacity-0 select-none transform -scale-y-100"
-            :class="{ 'animate-shine': isAnimating }"
-        >
-          fakermaker
-        </h1>
+<!--todo: fix animation-->
+<!--        &lt;!&ndash; Mirrored flash &ndash;&gt;-->
+<!--        <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10-->
+<!--      text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent-->
+<!--      bg-[length:200%_100%] opacity-0 select-none transform -scale-y-100"-->
+<!--            :class="{ 'animate-shine': isAnimating }"-->
+<!--        >-->
+<!--          fakermaker-->
+<!--        </h1>-->
       </div>
 
       <h2 class="text-text-grey mt-3.5 max-w-[510px] leading-[22px] mb-12">
@@ -176,7 +176,7 @@ const triggerAnimation = () => {
         from your favorite movies, shows, video games, and more.
       </h2>
 
-      <InputSelector :item-names="makers" v-model="activeMakers" />
+      <MakerSelector :item-names="makers" v-model="activeMakers" />
 
       <div class="flex flex-wrap gap-10 mt-10">
         <div v-for="(makerConfig, i) in makerConfigs" :key="i">
