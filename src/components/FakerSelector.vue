@@ -19,7 +19,7 @@ const isCollapsed = ref(false)  // track if menu is collapsed or not
       <div class="overflow-hidden py-[1px] relative mt-11">
         <div class="relative">
           <div
-            class="relative z-10 min-h-10 w-full px-3 py-2 bg-bg-input cursor-text"
+            class="relative z-10 min-h-10 w-full px-3 py-2 bg-bg-input cursor-pointer"
             @mousedown="
                 $event.target === $event.currentTarget &&
                 (() => {
@@ -56,7 +56,7 @@ const isCollapsed = ref(false)  // track if menu is collapsed or not
       </div>
 
       <div class="relative bg-cover bg-center h-[50px]"
-           style="background-image: url('/src/assets/lotr-background.png')">
+           style="background-image: url('/lotr-background.png')">
         <div class="absolute right-0 h-full w-[130px] bg-gradient-to-r from-transparent to-[#212738]" />
         <div class="text-white font-black text-md text-right pt-5 pr-3 relative z-10 drop-shadow-[0_0_14.1px_rgba(255,255,255,0.5)] transition-opacity duration-100 ease-out"
              :class="[isCollapsed ? 'opacity-0' : 'opacity-100']">
