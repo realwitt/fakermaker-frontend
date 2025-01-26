@@ -104,6 +104,10 @@ const fakerConfigs = [
     fileName: "bertram-gilfoyle.png"
   },
   {
+    displayName: "Smash Bros",
+    fileName: "smash-bros.png"
+  },
+  {
     displayName: "Star Wars",
     fileName: "yoda.png"
   },
