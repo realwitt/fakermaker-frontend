@@ -61,7 +61,7 @@ const fakerConfigs = [
   },
   {
     displayName: "Game of Thrones",
-    fileName: "neddard-stark.png"
+    fileName: "the-hound.png"
   },
   {
     displayName: "Gravity Falls",
