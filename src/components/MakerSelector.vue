@@ -157,7 +157,7 @@ const handleDownload = (increment: string) => {
 
       <!-- download button -->
       <DownloadButton
-        v-if="modelValue.length > 0"
+        :is-ready="modelValue.length > 0"
         @download="handleDownload"
       />
 

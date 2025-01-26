@@ -5,11 +5,16 @@ const increments = ["10,000", "5,000", "500", "250"]
 const selectedIncrement = ref("250")
 const showIncrements = ref(false)
 
+const props = defineProps<{
+  isReady: boolean
+}>()
+
 const emit = defineEmits<{
   (e: 'download', increment: string): void
 }>()
 
 const handleDownload = () => {
+  if (!props.isReady) return
   // Emit the selected increment to parent
   emit('download', selectedIncrement.value)
 }
@@ -44,9 +49,14 @@ const handleDownload = () => {
 
     <div
       @click="handleDownload"
-      class="px-6 pt-1 pb-1.5 flex place-items-center font-bold text-sm bg-accent-pink text-white rounded-b-md text-nowrap cursor-pointer hover:bg-pink-600 transition-colors"
+      class="px-6 pt-1 pb-1.5 flex place-items-center font-bold text-sm text-white rounded-b-md text-nowrap transition-colors"
+      :class="[
+        props.isReady
+          ? 'bg-accent-pink cursor-pointer hover:bg-pink-600'
+          : 'bg-gray-400 cursor-not-allowed'
+      ]"
     >
-      Download <span class="w-[73px] text-right pr-3 underline">{{ selectedIncrement }}</span> rows of data
+      Download <span class="w-[73px] text-right pr-3" :class="{ 'underline': props.isReady }">{{ selectedIncrement }}</span> rows of data
     </div>
   </div>
 </template>
