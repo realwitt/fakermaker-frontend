@@ -136,7 +136,7 @@ const fakerConfigs = [
       <!-- Sticky search section with top margin -->
       <div class="sticky top-0 z-30 bg-bg mt-11">
         <div
-          class="relative z-10 min-h-10 w-full px-3 py-2 bg-bg-input cursor-pointer"
+          class="relative z-10 min-h-10 w-full px-3 py-2 bg-bg-input cursor-pointer border-b border-accent-pink"
           @mousedown="
             $event.target === $event.currentTarget &&
             (() => {
@@ -154,31 +154,18 @@ const fakerConfigs = [
             @blur="isFocused = false"
           />
         </div>
-
-        <!-- Animated borders -->
-        <div
-          class="absolute inset-x-0 -top-[1px] h-[3px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-100 ease-out group-focus-within:w-full"
-        />
-        <div
-          class="absolute -left-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 ease-out group-focus-within:h-[calc(100%+2px)]"
-        />
-        <div class="absolute -bottom-[1px] left-0 h-[1px] w-full bg-accent-pink" />
-        <div
-          class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-pink-400 origin-left transition-all duration-100 ease-out group-hover:w-full"
-        />
-        <div
-          class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-accent-pink origin-left transition-all duration-100 delay-100 ease-out group-focus-within:w-full z-10"
-        />
       </div>
 
-      <!-- Scrollable content -->
+      <!-- Scrollable content with bottom padding -->
       <div class="overflow-auto flex-1">
-        <div v-for="fakerConfig in filteredFakers" :key="fakerConfig.displayName">
-          <Faker
-            :is-collapsed="isCollapsed"
-            :faker-config="fakerConfig"
-            @faker-toggled="handleFakerToggled"
-          />
+        <div class="pb-16"> <!-- Added padding bottom to offset DataTable -->
+          <div v-for="fakerConfig in filteredFakers" :key="fakerConfig.displayName">
+            <Faker
+              :is-collapsed="isCollapsed"
+              :faker-config="fakerConfig"
+              @faker-toggled="handleFakerToggled"
+            />
+          </div>
         </div>
       </div>
     </div>

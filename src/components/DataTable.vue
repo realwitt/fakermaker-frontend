@@ -307,7 +307,7 @@ function handleMouseLeaveDataTable() {
             <!-- styling for headers -->
             <th
               v-for="header in headerGroup.headers"
-              class="relative text-accent-pink text-left font-medium text-sm px-4 pb-2 bg-bg"
+              class="relative text-accent-pink text-left font-medium text-sm px-6 pt-2 pb-2 bg-bg"
               :key="header.id"
               :colspan="header.colSpan"
               :style="{

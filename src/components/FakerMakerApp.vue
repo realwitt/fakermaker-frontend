@@ -155,6 +155,45 @@ const dataTableItemsQuery = useMutation<DataTableResponseType, Error, DataTableR
   }
 })
 
+const downloadCsvMutation = useMutation({
+  mutationFn: async ({ increment, schema }: { increment: string, schema: DataTableRequestType }) => {
+    const response = await fetch(`https://data.fakermaker.fm/api/fakermaker/csv/${increment.replace(',', '')}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(schema)
+    })
+
+    if (!response.ok) {
+      throw new Error('Download failed')
+    }
+
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `fakermaker-${increment}-rows.csv`)
+    document.body.appendChild(link)
+    link.click()
+    link.parentNode?.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+})
+
+const handleDownloadCsv = (increment: string) => {
+  // Ensure schema is up to date before download
+  schema.value = {
+    ...schema.value,
+    makers: makerConfigs.value
+  }
+
+  downloadCsvMutation.mutate({
+    increment,
+    schema: schema.value
+  })
+}
+
 function handleGenerateData() {
   schema.value = {
     ...schema.value,
@@ -163,7 +202,8 @@ function handleGenerateData() {
   }
 
   // Submit the schema
-  dataTableItemsQuery.mutate(schema.value)}
+  dataTableItemsQuery.mutate(schema.value)
+}
 
 
 const isAnimating = ref(false)
@@ -188,15 +228,15 @@ const triggerAnimation = () => {
         <h1 class="text-text-grey text-[40px] font-black mt-10">
           fakermaker
         </h1>
-<!--todo: fix animation-->
-<!--        &lt;!&ndash; Mirrored flash &ndash;&gt;-->
-<!--        <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10-->
-<!--      text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent-->
-<!--      bg-[length:200%_100%] opacity-0 select-none transform -scale-y-100"-->
-<!--            :class="{ 'animate-shine': isAnimating }"-->
-<!--        >-->
-<!--          fakermaker-->
-<!--        </h1>-->
+        <!--todo: fix animation-->
+        <!--        &lt;!&ndash; Mirrored flash &ndash;&gt;-->
+        <!--        <h1 class="absolute -top-[11px] left-0 text-[40px] font-black mt-10-->
+        <!--      text-transparent bg-clip-text bg-gradient-to-r from-transparent via-accent-pink to-transparent-->
+        <!--      bg-[length:200%_100%] opacity-0 select-none transform -scale-y-100"-->
+        <!--            :class="{ 'animate-shine': isAnimating }"-->
+        <!--        >-->
+        <!--          fakermaker-->
+        <!--        </h1>-->
       </div>
 
       <h2 class="text-text-grey mt-3.5 max-w-[510px] leading-[22px] mb-12">
@@ -204,7 +244,12 @@ const triggerAnimation = () => {
         from your favorite movies, shows, video games, and more.
       </h2>
 
-      <MakerSelector :item-names="makers" v-model="activeMakers" />
+      <MakerSelector
+        :item-names="makers"
+        v-model="activeMakers"
+        @download="handleDownloadCsv"
+      />
+
 
       <div class="flex flex-wrap gap-10 mt-10">
         <div v-for="(makerConfig, i) in makerConfigs" :key="i">
@@ -225,17 +270,17 @@ const triggerAnimation = () => {
         @click="handleGenerateData"
         :disabled="dataTableItemsQuery.isPending.value"
       >
-        {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data' }}
+        {{ dataTableItemsQuery.isPending.value ? 'Generating...' : 'Generate Data Sample' }}
       </button>
     </div>
 
   </div>
 
   <!--  this floats above the context as a tooltip after the API call has completed. -->
-    <div
-      v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
-      <DataTable :data="dataTableItemsQuery.data.value" />
-    </div>
+  <div
+    v-if="!dataTableItemsQuery.isPending.value && !dataTableItemsQuery.isError.value && dataTableItemsQuery.data.value">
+    <DataTable :data="dataTableItemsQuery.data.value" />
+  </div>
 
 
 </template>

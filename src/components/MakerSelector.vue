@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import DownloadButton from './DownloadButton.vue'
+
 const props = defineProps<{
   itemNames?: Array<string>
   modelValue: Array<string>
 }>()
 const emits = defineEmits<{
-  (event: 'update:modelValue', items: Array<string>): void
+  (e: 'update:modelValue', value: string[]): void
+  (e: 'download', increment: string): void  // Add new emit for download
 }>()
 
 const isMakerSearchFocused = ref(false)
@@ -93,56 +96,76 @@ function removeItem(index: number) {
 
   updateSelected(newItems)
 }
+
+const handleDownload = (increment: string) => {
+  emits('download', increment)
+}
 </script>
 
 <template>
   <div class="group relative w-full">
-    <div class="mt-8 overflow-hidden px-[1px] py-[1px] rounded-t-[7px] relative z-20">
-      <div class="relative">
+    <div class="flex mt-8 place-items-center">
+      <div class="grow overflow-hidden px-[1px] py-[1px] rounded-t-[7px] relative z-20">
+        <div class="relative">
 
-        <!-- pills and input -->
-        <div
-          class=" relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
-          @mousedown="$event.target === $event.currentTarget && (() => { $event.preventDefault(); !isMakerSearchFocused && makerInput?.focus() })()"
-        >
-          <!-- Pills for selected items -->
+          <!-- pills and input -->
           <div
-            v-for="(item, index) in selectedItems"
-            :key="index"
-            :class="[
+            class="relative z-10 min-h-10 w-full px-3 pt-3 pb-3 rounded-t-md bg-bg-input flex flex-wrap gap-2 items-center cursor-text"
+            @mousedown="$event.target === $event.currentTarget && (() => { $event.preventDefault(); !isMakerSearchFocused && makerInput?.focus() })()"
+          >
+            <!-- Pills for selected items -->
+            <div
+              v-for="(item, index) in selectedItems"
+              :key="index"
+              :class="[
                 'bg-accent-pink text-white text-sm flex items-center rounded-full font-semibold overflow-hidden',
                 { 'ring-2 ring-accent-purple -pr-2': isBackspaceOnEmpty && index === selectedItems.length - 1 }
               ]"
-          >
-            <span class="px-3 py-0.5">{{ item }}</span>
-            <button
-              @click="removeItem(index)"
-              class="hover:bg-accent-purple px-2 py-0.5 h-full flex items-center transition-colors"
-            >×</button>
+            >
+              <span class="px-3 py-0.5">{{ item }}</span>
+              <button
+                @click="removeItem(index)"
+                class="hover:bg-accent-purple px-2 py-0.5 h-full flex items-center transition-colors"
+              >×
+              </button>
+            </div>
+            <!-- Input field -->
+            <input
+              ref="makerInput"
+              class="flex-grow bg-transparent text-text-grey focus:outline-none caret-accent-pink placeholder-text-grey min-w-[100px] h-full"
+              :placeholder="selectedItems.length === 0 ? 'Search & select makers...' : ''"
+              v-model="searchTerm"
+              @keydown="handleKeydown"
+              @focus="isMakerSearchFocused = true"
+              @blur="isMakerSearchFocused = false"
+            />
           </div>
-          <!-- Input field -->
-          <input
-            ref="makerInput"
-            class="flex-grow bg-transparent text-text-grey focus:outline-none caret-accent-pink placeholder-text-grey min-w-[100px] h-full"
-            :placeholder="selectedItems.length === 0 ? 'Search & select makers...' : ''"
-            v-model="searchTerm"
-            @keydown="handleKeydown"
-            @focus="isMakerSearchFocused = true"
-            @blur="isMakerSearchFocused = false"
-          />
-        </div>
 
-        <div class="absolute inset-x-0 -top-[1px] h-[3px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-100 ease-out group-focus-within:w-full"></div>
-        <div class="absolute -left-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
-        <div class="absolute -right-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 delay-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
-        <div class="absolute -bottom-[1px] left-0 h-[1px] w-full bg-accent-pink"></div>
-        <div class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-accent-purple origin-left transition-all duration-100 ease-out group-hover:w-full"></div>
-        <div class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-accent-pink origin-left transition-all duration-100 delay-100 ease-out group-focus-within:w-full z-10"></div>
+          <div
+            class="absolute inset-x-0 -top-[1px] h-[3px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-100 ease-out group-focus-within:w-full"></div>
+          <div
+            class="absolute -left-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
+          <div
+            class="absolute -right-[1px] -top-[1px] w-[3px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-100 delay-100 ease-out group-focus-within:h-[calc(100%+2px)]"></div>
+          <div class="absolute -bottom-[1px] left-0 h-[1px] w-full bg-accent-pink"></div>
+          <div
+            class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-pink-700 origin-left transition-all duration-100 ease-out group-hover:w-full"></div>
+          <div
+            class="absolute -bottom-[1px] left-0 h-[1px] w-0 bg-accent-pink origin-left transition-all duration-100 delay-100 ease-out group-focus-within:w-full z-10"></div>
+        </div>
       </div>
+
+      <!-- download button -->
+      <DownloadButton
+        v-if="modelValue.length > 0"
+        @download="handleDownload"
+      />
+
     </div>
 
+
     <!-- 1 pixel padding to the left to offset the collapsing of the borders among all the items -->
-    <div class="pl-[1px] absolute top-full left-0 right-0 overflow-hidden pointer-events-none group-focus-within:pointer-events-auto z-50">
+    <div class="pl-[1px] -mt-[4.5px] absolute top-full left-0 right-0 overflow-hidden pointer-events-none group-focus-within:pointer-events-auto z-50 w-[calc(100%-313px)]">
       <div
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 -mt-[1px] w-full transition-transform duration-100 ease-in-out -translate-y-full group-focus-within:translate-y-0 group-focus-within:transition-[transform] group-focus-within:delay-100"
       >
@@ -152,11 +175,15 @@ function removeItem(index: number) {
           class="group/item relative text-text-grey px-3 py-2 min-w-10 bg-bg-slightly-lighter border border-line -ml-[1px] -mt-[1px] hover:text-accent-pink duration-150 cursor-pointer"
           @mousedown.prevent="() => { selectItem(name); makerInput?.focus(); }"
         >
-          {{name}}
-          <div class="absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/item:w-full z-20"></div>
-          <div class="absolute -left-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 ease-out group-hover/item:h-[calc(100%+2px)] z-20"></div>
-          <div class="absolute -right-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 delay-150 ease-out group-hover/item:h-[calc(100%+2px)] z-20"></div>
-          <div class="absolute -bottom-[1px] left-0 h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 delay-150 ease-out group-hover/item:w-full z-20"></div>
+          {{ name }}
+          <div
+            class="absolute inset-x-0 -top-[1px] h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 ease-out group-hover/item:w-full z-20"></div>
+          <div
+            class="absolute -left-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 ease-out group-hover/item:h-[calc(100%+2px)] z-20"></div>
+          <div
+            class="absolute -right-[1px] -top-[1px] w-[1px] h-0 overflow-hidden bg-accent-pink origin-top transition-all duration-150 delay-150 ease-out group-hover/item:h-[calc(100%+2px)] z-20"></div>
+          <div
+            class="absolute -bottom-[1px] left-0 h-[1px] w-0 overflow-hidden bg-accent-pink origin-left transition-all duration-150 delay-150 ease-out group-hover/item:w-full z-20"></div>
         </div>
       </div>
     </div>
