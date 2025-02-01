@@ -1,4 +1,4 @@
-## The web client for [fakermaker](https://fakermaker.fm)
+## The web client for [fakermaker.fm](https://fakermaker.fm)
 Setup is short and sweet.  
 `npm i`  
 `npm run dev`
